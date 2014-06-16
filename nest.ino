@@ -59,8 +59,8 @@ static void resolv_found(char *name, uip_ipaddr_t *addr) {
   mqtt.connect();
 
   /// connected message
-  uint8_t data[9] = { macaddr[0], macaddr[1], macaddr[2], macaddr[3], macaddr[4], macaddr[5], 255, 255, 255};
-  uint8_t len = 9;
+  uint8_t data[10] = { macaddr[0], macaddr[1], macaddr[2], macaddr[3], macaddr[4], macaddr[5],SERVER_ADDRESS, 255, 255, 255};
+  uint8_t len = 10;
   publish(data, len);
   Serial.println(F("setup() done"));
 }
@@ -109,8 +109,8 @@ void loop() {
     uint8_t len = 2;
     uint8_t from;
     if (manager.recvfromAck(buf, &len, &from)) {
-      uint8_t data[9] = { macaddr[0], macaddr[1], macaddr[2], macaddr[3], macaddr[4], macaddr[5], from, buf[0], buf[1]};
-      uint8_t len = 9;
+      uint8_t data[10] = { macaddr[0], macaddr[1], macaddr[2], macaddr[3], macaddr[4], macaddr[5], SERVER_ADDRESS, from, buf[0], buf[1]};
+      uint8_t len = 10;
       publish(data, len);
       // Send a reply back to the originator client
       if (!manager.sendtoWait(buf, 2, from)) {
