@@ -2,16 +2,16 @@
 #include <NanodeUIP.h>
 #include <NanodeMQTT.h>
 #include <RF22ReliableDatagram.h>
-#include <RF22.h>
+#include <RF22.h> 
 #include <SPI.h>
 
 NanodeMQTT mqtt(&uip);
 
-//#define CLIENT_ADDRESS 1
 #define SERVER_ADDRESS 0
+ 
+// Singleton instance of the radio
+RF22ReliableDatagram manager(SERVER_ADDRESS,8,0);
 
-// Class to manage message delivery and receipt, using the driver declared above
-RF22ReliableDatagram manager(SERVER_ADDRESS);
 const byte macaddr[] = { 0x74, 0x69, 0x69, 0x2D, 0x30, 0x31 };
 const char topic[] = "skydome/7469692d3031";
 int a = -1;
@@ -83,14 +83,14 @@ void setup() {
     Serial.println(F("init success"));
   else
     Serial.println(F("init failed"));
-
-  uip.init(macaddr);
-  uip.get_mac_str(buf);
-  Serial.println(buf);
-  uip.wait_for_link();
-  Serial.println(F("Link is up"));
-  uip.init_resolv(resolv_found);
-  uip.start_dhcp(dhcp_status);
+//
+//  uip.init(macaddr);
+//  uip.get_mac_str(buf);
+//  Serial.println(buf);
+//  uip.wait_for_link();
+//  Serial.println(F("Link is up"));
+//  uip.init_resolv(resolv_found);
+//  uip.start_dhcp(dhcp_status);
 }
 
 void publish(uint8_t data[], uint8_t len ) {
@@ -109,9 +109,10 @@ void loop() {
     uint8_t len = 2;
     uint8_t from;
     if (manager.recvfromAck(buf, &len, &from)) {
+      Serial.print(F("Received :")); 
       uint8_t data[10] = { macaddr[0], macaddr[1], macaddr[2], macaddr[3], macaddr[4], macaddr[5], SERVER_ADDRESS, from, buf[0], buf[1]};
       uint8_t len = 10;
-      publish(data, len);
+      //publish(data, len);
       // Send a reply back to the originator client
       if (!manager.sendtoWait(buf, 2, from)) {
         //// alarm to a red led !!!
